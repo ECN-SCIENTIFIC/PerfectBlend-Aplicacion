@@ -1,0 +1,31 @@
+{
+  "px_mm": 1.60,
+  "CALIBRAR": true,
+  "window_size": 10,
+  "calibrations": {
+    "simulation_A": {
+      "coeffs": [1, 0]
+    },
+    "simulation_B": {
+      "coeffs": [0.5, 0]
+    },
+    "simulation_3": {
+      "coeffs": [1, 0]
+    },
+    "simulation_4": {
+      "coeffs": [0.5, 0]
+    },
+    "simulation_5": {
+      "coeffs": [1, 0]
+    },
+    "simulation_6": {
+      "coeffs": [0.5, 0]
+    },
+    "simulation_7": {
+      "coeffs": [1, 0]
+    },
+    "simulation_8": {
+      "coeffs": [0.5, 0]
+    }
+  }
+}

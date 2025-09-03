@@ -1,0 +1,9 @@
+{
+    "MODEL_PATH":  "C:/Users/Miguel/Documents/GitHub/PerfectBlend-Aplicacion/Sistema F80/shared_resources/model/best.onnx",
+    "SLICE": 640,
+    "OVERLAP": 0.2,
+    "CALIBRATION_PATH": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/calibration.pkl",
+    "CONF": 0.3,
+    "NMS_THRESHOLD": 0.3,
+    "WARMUP_IMG_PATH": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08/img_network_cam_FEEDER 16_2025-08-13_18-05-57_0002.png"
+}
