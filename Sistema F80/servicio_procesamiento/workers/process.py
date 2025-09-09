@@ -116,12 +116,13 @@ def process_granulometry(camera_id: str, inference_data: dict):
         "Fs_ajust": fs_ajust_list,
         "cam_id": camera_id,
         "sim": inference_data["sim"],
-        "capture_time": inference_data["capture_time"]
+        "capture_time": inference_data["capture_time"],
+        "img_result": inference_data["img_result"],
+        "img_original": inference_data["img_original"]
     }
 
     print(f"--- Procesado completo para camara: {camera_id} ---")
-    print(f"{results}")
-
+    
     save_to_db.delay(results)
     return {"status": "Procesado completo", "camara": camera_id}
 

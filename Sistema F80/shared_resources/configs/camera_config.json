@@ -8,7 +8,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_B",
@@ -17,7 +19,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_3",
@@ -26,7 +30,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_4",
@@ -35,7 +41,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_5",
@@ -44,7 +52,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_6",
@@ -53,7 +63,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_7",
@@ -62,7 +74,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         },
         {
         "camara_id": "simulation_8",
@@ -71,7 +85,9 @@
         "url": "rtsp://admin:password@192.168.1.108:554/stream1",
         "intervalo_captura": 2.0,
         "simulation": true,
-        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08"
+        "simulation_source": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/FEEDER 16/FEEDER 16 13-08",
+        "crop_y": [186, 778],
+        "crop_x": [0,1920]
         }
     ]
 }

@@ -2,7 +2,8 @@ from celery_app import celery_app
 from .process import process_granulometry
 import cv2
 import numpy as np
-
+import onnx
+import onnxruntime
 from ultralytics import YOLO
 import json
 import pickle
@@ -135,11 +136,20 @@ def perform_inference(camera_id: str, image_data: str, sim, capture_time):
             area_ar.append(ellipse[1])
 
     res_img = frame.copy()
-    for mask in final_masks:
-        cv2.polylines(res_img, [np.array(mask)], isClosed=True, color=(0, 255, 0), thickness=2)
-    _, buffer = cv2.imencode(".jpg", res_img)
-    img_result_encoded = base64.b64encode(buffer).decode('utf-8')
+    overlay = frame.copy()
+    alpha = 0.4 
+    color_fill = (0, 255, 0) 
 
+    pts_for_poly = [np.array(mask, dtype=np.int32) for mask in final_masks]
+
+    cv2.fillPoly(overlay, pts_for_poly, color_fill)
+
+    cv2.addWeighted(overlay, alpha, res_img, 1 - alpha, 0, res_img)
+    
+    _, buffer = cv2.imencode(".jpg", res_img)
+    _, buffer_og = cv2.imencode(".jpg", frame)
+    img_result_encoded = base64.b64encode(buffer).decode('utf-8')
+    frame_encoded = base64.b64encode(buffer_og).decode('utf-8')
     total_mask_area = 0.0
     for mask_points in final_masks:
         contour = np.array(mask_points)
@@ -151,6 +161,7 @@ def perform_inference(camera_id: str, image_data: str, sim, capture_time):
 
     results = {
         "img_result": img_result_encoded,
+        "img_original": frame_encoded,
         "area_ar": area_ar,
         "detections": detection_percentage,
         "sim": sim,

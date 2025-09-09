@@ -3,5 +3,6 @@
     "port": 5432,
     "database": "PerfectBlend",
     "user": "postgres",
-    "password": "ecn"
+    "password": "ecn",
+    "imgs_route": "C:/Users/Miguel/Documents/Proyectos/Perfect Blend/Datos/output_test"
 }
