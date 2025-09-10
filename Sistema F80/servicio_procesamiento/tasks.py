@@ -6,7 +6,7 @@ from celery import signals
 from celery_app import celery_app
 from pyinstaller_utils import resource_path
 from workers.inference import perform_inference
-
+import time
 config_file = resource_path("configs/camera_config.json")
 config = None
 
@@ -14,7 +14,7 @@ config = None
 def on_beat_init(sender, **kwargs):
     print("--- (Beat Process Detected) Inicializando camaras ---")
     initialize_cameras.delay()
-
+    time.sleep(15)
 
 try:
     with open(config_file, 'r') as config:
@@ -51,7 +51,7 @@ def initialize_cameras():
         for camera_config in enabled_cameras:
             cam_id = camera_config["camara_id"]
             try:
-                response = requests.post(f"{camera_service_url}/start_camera", json=camera_config, timeout=5)
+                response = requests.post(f"{camera_service_url}/start_camera", json=camera_config, timeout=30)
                 response.raise_for_status()
                 print(f"Enviada señal de start para camara: {cam_id}")
             except requests.exceptions.HTTPError as e:

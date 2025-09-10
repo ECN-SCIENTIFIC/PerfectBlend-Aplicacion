@@ -31,9 +31,9 @@ def run_api_service():
 def run_camera_service():
     """Inicia la API del servicio de cámaras."""
     import uvicorn
-    from camera_service.main import app
+    from camera_service.camera_api import app
     print("Iniciando servicio de camara en el puerto 8001...")
-    uvicorn.run("camera_service.main:app", host="0.0.0.0", port=8001)
+    uvicorn.run("camera_service.camera_api:app", host="0.0.0.0", port=8001)
 
 def run_celery_worker_entrypoint():
     """Punto de entrada REAL para el worker de Celery."""
@@ -53,6 +53,8 @@ def run_celery_beat_entrypoint():
     celery_app.start(argv)
 
 if __name__ == '__main__':
+    import multiprocessing as mp
+    mp.freeze_support()
     service = sys.argv[1] if len(sys.argv) > 1 else None
 
     if service and '_entry' in service:

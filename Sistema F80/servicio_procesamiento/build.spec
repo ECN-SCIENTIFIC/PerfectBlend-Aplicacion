@@ -54,7 +54,7 @@ a = Analysis(
         'gevent',
         'celery_app',
         'main',
-        'camera_service.main',
+        'camera_service.camera_api',
         'cv2',
         'onnx',
         'onnxruntime',

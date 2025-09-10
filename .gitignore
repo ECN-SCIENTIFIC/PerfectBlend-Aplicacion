@@ -1,0 +1,8 @@
+build/
+dist/
+shared_resources deploy
+__pycache__
+celerybeat-*
+*.bat
+*.pt
+*.onnx

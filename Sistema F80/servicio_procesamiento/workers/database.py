@@ -36,8 +36,8 @@ def save_to_db(results):
     frame = cv2.imdecode(np.frombuffer(og_image_bytes, np.uint8), cv2.IMREAD_COLOR)
     frame_segmented = cv2.imdecode(np.frombuffer(inference_bytes, np.uint8), cv2.IMREAD_COLOR)
     capture_time_safe = results.get("capture_time", "unknown_time").replace(":", "-").replace("+", "_")
-    filename_seg = f"img_{capture_time_safe}_camera_{results.get('camara_id')}_segmented.jpeg"
-    filename_og = f"img_{capture_time_safe}_camera_{results.get('camara_id')}_original.jpeg"
+    filename_seg = f"img_{capture_time_safe}_camera_{results.get('cam_id')}_segmented.jpeg"
+    filename_og = f"img_{capture_time_safe}_camera_{results.get('cam_id')}_original.jpeg"
     directorio = Path(CONFIG.get("imgs_route"))
     s_seg = cv2.imwrite(directorio / filename_seg, frame_segmented)
     s_og = cv2.imwrite(directorio / filename_og, frame)
