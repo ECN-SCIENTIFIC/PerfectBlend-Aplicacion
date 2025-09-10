@@ -4,6 +4,7 @@ import cv2
 import multiprocessing as mp
 from datetime import datetime, timezone
 from itertools import cycle
+from ..logger import setup_worker_logging
 
 os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = (
     "rtsp_transport;tcp"
@@ -13,6 +14,8 @@ os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = (
     "|fflags;nobuffer"
     "|flags;low_delay"
 )
+
+logger = setup_worker_logging("camera_capture", "logs/camera_capture.log")
 
 def _open_cap(url, backend=cv2.CAP_FFMPEG):
     cap = cv2.VideoCapture(url, backend)
@@ -69,7 +72,7 @@ def capture_process(url, queue: mp.Queue, stop_event: mp.Event, crop_y=None, cro
                     pass
                 time.sleep(0.001)
             except Exception as e:
-                print(f"[SIMULATION {simulation_source}] ERROR: {e}")
+                logger.error(f"[SIMULATION {simulation_source}] ERROR: {e}")
                 time.sleep(reconnect_delay)
         else:           
             try:
@@ -101,7 +104,7 @@ def capture_process(url, queue: mp.Queue, stop_event: mp.Event, crop_y=None, cro
                     pass
                 time.sleep(0.001)
             except Exception as e:
-                print(f"[CAPTURE {url}] ERROR: {e}, reintentando en {reconnect_delay}s")
+                logger.error(f"[CAPTURE {url}] ERROR: {e}, reintentando en {reconnect_delay}s")
                 try:
                     if cap:
                         cap.release()
@@ -114,4 +117,4 @@ def capture_process(url, queue: mp.Queue, stop_event: mp.Event, crop_y=None, cro
             cap.release()
         except:
             pass
-    print(f"[CAPTURE {url}] stop_event set - proceso detenido.")
+    logger.info(f"[CAPTURE {url}] stop_event set - proceso detenido.")

@@ -11,7 +11,8 @@ import traceback
 import base64
 import time
 from pyinstaller_utils import resource_path
-
+from ..logger import setup_worker_logging
+logger = setup_worker_logging("inference_worker", "logs/inference_worker.log")
 CONFIG = None
 MODEL = None
 
@@ -29,18 +30,18 @@ def load_resources():
             config_file = resource_path("configs/inference_config.json")
             with open(config_file, 'r') as f:
                 CONFIG = json.load(f)
-            print("Se cargo el config de la inferencia correctamente")
+            logger.info("Se cargo el config de la inferencia correctamente")
         except Exception as e:
-            print(f"Error cargando el config de inferencia: {e}")
+            logger.error(f"Error cargando el config de inferencia: {e}")
             CONFIG = {} # Prevent retrying on failure
 
     if MODEL is None and CONFIG:
-        print("--- Cargando modelo ---")
+        logger.info("--- Cargando modelo ---")
         try:
             MODEL = YOLO(CONFIG["MODEL_PATH"], task="segment")
-            print("Modelo cargado exitosamente.")
+            logger.info("Modelo cargado exitosamente.")
         except Exception as e:
-            print(f"Error cargando el modelo: {e}")
+            logger.info(f"Error cargando el modelo: {e}")
             MODEL = None
     if CONFIG["CALIBRATION_PATH"]:
         with open(CONFIG["CALIBRATION_PATH"], "rb") as f:
@@ -79,7 +80,7 @@ def perform_inference(camera_id: str, image_data: str, sim, capture_time):
     if MODEL is None:
         return {"error": "Modelo no cargado"}
 
-    print(f"Inferencia por lotes comenzada para camara {camera_id}")
+    logger.info(f"[{camera_id}] Inferencia por lotes comenzada para camara {camera_id}")
     start_time = time.time()
 
     image_bytes = base64.b64decode(image_data)
@@ -122,7 +123,7 @@ def perform_inference(camera_id: str, image_data: str, sim, capture_time):
                 all_masks.append(global_mask.astype(int).tolist())
 
     if not all_boxes:
-        print(f"No se encontraron detecciones para la camara: {camera_id}")
+        logger.info(f"[{camera_id}] No se encontraron detecciones para la camara: {camera_id}")
         return {"status": "Inferencia completa sin detecciones.", "camera_id": camera_id}
 
     boxes_for_nms = [[box[0], box[1], box[2] - box[0], box[3] - box[1]] for box in all_boxes]
@@ -171,7 +172,7 @@ def perform_inference(camera_id: str, image_data: str, sim, capture_time):
     process_granulometry.delay(camera_id, results)
 
     end_time = time.time()
-    print(f"INFERENCE [COMPLETED] for camera: {camera_id} in {end_time - start_time:.2f} seconds.")
+    logger.info(f"INFERENCE [COMPLETED] for camera: {camera_id} in {end_time - start_time:.2f} seconds.")
 
     return {"status": "Inference complete, passed to processing worker.", "camera_id": camera_id}
 

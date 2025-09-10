@@ -1,4 +1,5 @@
-import time
+from ..logger import setup_worker_logging
+from .database import save_to_db
 import json
 import numpy as np
 import pandas as pd
@@ -9,7 +10,8 @@ from pyinstaller_utils import resource_path
 CONFIG = None
 REDIS_CLIENT = None
 
-from .database import save_to_db
+logger = setup_worker_logging("database_tasks", "logs/db.log")
+
 
 def load_resources():
     """
@@ -23,18 +25,18 @@ def load_resources():
             config_file = resource_path("configs/process_config.json")
             with open(config_file, 'r') as f:
                 CONFIG = json.load(f)
-            print("Se cargo el config del procesamiento correctamente")
+            logger.info("Se cargo el config del procesamiento correctamente")
         except Exception as e:
-            print(f"Error cargando el config del procesamiento: {e}")
+            logger.error(f"Error cargando el config del procesamiento: {e}")
             CONFIG = {} # Prevent retrying on failure
     if REDIS_CLIENT is None:
         try:
             # Conexión a Redis para el historial
             REDIS_CLIENT = redis.Redis(host='localhost', port=6379, db=0)
             REDIS_CLIENT.ping()
-            print("Conexión a Redis para historial establecida.")
+            logger.info("Conexión a Redis para historial establecida.")
         except Exception as e:
-            print(f"Error conectando a Redis para historial: {e}")
+            logger.error(f"Error conectando a Redis para historial: {e}")
             REDIS_CLIENT = None
     
 @celery_app.task(name="workers.process.process_granulometry")
@@ -64,11 +66,11 @@ def process_granulometry(camera_id: str, inference_data: dict):
         current_size = REDIS_CLIENT.llen(history_key)
         
         if current_size < window_size:
-            print(f"Historial para {camera_id} tiene {current_size}/{window_size} mediciones. Esperando más datos.")
+            logger.info(f"Historial para {camera_id} tiene {current_size}/{window_size} mediciones. Esperando más datos.")
             return {"status": f"Acumulando datos para {camera_id}"}
         
         REDIS_CLIENT.ltrim(history_key, 0, window_size - 1)
-        print(f"Cola para {camera_id} llena ({current_size}/{window_size}). Calculando granulometría suavizada.")
+        logger.info(f"Cola para {camera_id} llena ({current_size}/{window_size}). Calculando granulometría suavizada.")
         
         all_data_json = REDIS_CLIENT.lrange(history_key, 0, -1)
         
@@ -94,7 +96,7 @@ def process_granulometry(camera_id: str, inference_data: dict):
 
         Fs = np.append(Fs, max(ellips_df["eje_m"]))
     except Exception as e:
-        print(f"Error calculando los Fs: {e}")
+        logger.info(f"Error calculando los Fs: {e}")
         return {"status": "Proceso fallido", "camara": camera_id}
     Fs_ajust = None
     
@@ -105,7 +107,7 @@ def process_granulometry(camera_id: str, inference_data: dict):
             coeffs = camera_cal.get("coeffs", [1, 0])
             Fs_ajust = np.polyval(coeffs, Fs)
         except Exception as e:
-            print(f"Error ejecutando la calibración {e}")
+            logger.error(f"Error ejecutando la calibración {e}")
             return {"status": "Proceso fallido", "camara": camera_id}
 
     fs_list = Fs.tolist()
@@ -121,7 +123,7 @@ def process_granulometry(camera_id: str, inference_data: dict):
         "img_original": inference_data["img_original"]
     }
 
-    print(f"--- Procesado completo para camara: {camera_id} ---")
+    logger.info(f"--- Procesado completo para camara: {camera_id} ---")
     
     save_to_db.delay(results)
     return {"status": "Procesado completo", "camara": camera_id}

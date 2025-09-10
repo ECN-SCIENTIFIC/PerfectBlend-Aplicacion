@@ -10,6 +10,8 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response
 import time
+from ..logger import setup_worker_logging
+
 camaras = {}
 
 class CameraConfig(BaseModel):
@@ -24,19 +26,21 @@ class CameraConfig(BaseModel):
     class Config:
         extra = Extra.ignore
 
+logger = setup_worker_logging("camera_api", "logs/camera_api.log")
 app = FastAPI(title="Servicio de la camara")
+
 try:
     redis_client = redis.Redis(host='localhost', port=6379, db=1)
     redis_client.ping()
-    print("Conexión a Redis para colas de cámara establecida.")
+    logger.info("Conexión a Redis para colas de cámara establecida.")
 except Exception as e:
-    print(f"Error conectando a Redis: {e}")
+    logger.error(f"Error conectando a Redis: {e}")
     redis_client = None
 
 @app.post("/start_camera")
 def start_camera(config: CameraConfig):
     cam_id = config.camara_id
-    print(f"Procesando solicitud de inicio de cámara {cam_id}...")
+    logger.info(f"Procesando solicitud de inicio de cámara {cam_id}...")
     if cam_id in camaras:
         raise HTTPException(status_code=400, detail=f"Camara '{cam_id}' en ejecución.")
     if not redis_client:
@@ -64,17 +68,17 @@ def start_camera(config: CameraConfig):
                 r.ltrim(redis_key, -5, -1)
                 #print("Image pushed to Redis.")
             except Exception as e:
-                print("Reconnecting to Redis...")
+                logger.info(f"[{config.camara_id}] Reconnecting to Redis...")
                 r = redis.Redis(host="localhost", port=6379, db=1)
-                print(f"[DISPATCHER {config.camara_id}] Redis push error: {e}")
-                print(f"[DISPATCHER {config.camara_id}] stop.")
+                logger.error(f"[DISPATCHER {config.camara_id}] Redis push error: {e}")
+                logger.error(f"[DISPATCHER {config.camara_id}] stop.")
 
 
     dispatch_thread = threading.Thread(target=dispatch, daemon=True)
     dispatch_thread.start()
 
     camaras[config.camara_id] = {'proc': p, 'queue': q, 'stop': stop_evt, 'dispatch_thread': dispatch_thread}
-    print(f"Camara {cam_id} iniciada correctamente.")
+    logger.info(f"[{config.camara_id}] Camara {cam_id} iniciada correctamente.")
     return {"status": f"Camara {cam_id} iniciada correctamente."}
 
 
@@ -96,7 +100,7 @@ async def get_frame(camera_id: str):
         time.sleep(1)
         payload = redis_client.lpop(redis_key)
         if payload is None:
-            print("No hay frames en la cola")
+            logger.info(f"[{camera_id}] No hay frames en la cola")
             raise HTTPException(status_code=404, detail="No hay frames en la cola.")
 
 

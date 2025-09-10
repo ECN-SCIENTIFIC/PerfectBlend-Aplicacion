@@ -6,6 +6,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 from pyinstaller_utils import resource_path
+from ..logger import setup_worker_logging
+logger = setup_worker_logging("database_tasks", "logs/db.log")
 CONFIG = None
 
 def load_resources():
@@ -16,9 +18,9 @@ def load_resources():
             config_path = resource_path("configs/db_config.json")
             with open(config_path, 'r') as f:
                 CONFIG = json.load(f)
-            print("Se cargo el config de la base de datos correctamente")
+            logger.info("Se cargo el config de la base de datos correctamente")
         except Exception as e:
-            print(f"Error cargando el config de la base de datos: {e}")
+            logger.error(f"Error cargando el config de la base de datos: {e}")
             CONFIG = {}
 
 @celery_app.task(name="workers.database.save_to_db")
@@ -42,7 +44,7 @@ def save_to_db(results):
     s_seg = cv2.imwrite(directorio / filename_seg, frame_segmented)
     s_og = cv2.imwrite(directorio / filename_og, frame)
     if s_seg and s_og:
-        print("Se guardaron las imagenes correctamente.")
+        logger.info(f"[{results.get["cam_id"]}] Se guardaron las imagenes correctamente.")
 
     fs_values = results.get("Fs", [])
     Fs_formateado = {
@@ -96,10 +98,10 @@ def save_to_db(results):
         cur.execute(sql, data_to_insert)
         conn.commit()
         cur.close()
-        print(f"Resultado guardado en la base de datos para la camara: {results.get('cam_id')}")
+        logger.info(f"[{results.get("cam_id")}] Resultado guardado en la base de datos para la camara: {results.get('cam_id')}")
 
     except Exception as error:
-        print(f"Error conectando o guardando en PostgreSQL: {error}")
+        logger.error(f"[{results.get("cam_id")}] Error conectando o guardando en PostgreSQL: {error}")
         if conn is not None:
             conn.close()
         return {"status": "Database save attempt failed."}
